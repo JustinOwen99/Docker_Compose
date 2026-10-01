@@ -20,9 +20,9 @@ services:
     restart: unless-stopped
     environment:
       DB_HOST: mariadb
-      DB_NAME: processwire
-      DB_USER: processwire
-      DB_PASSWORD: processwirepass
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
     depends_on:
       - mariadb
     networks:
@@ -33,10 +33,10 @@ services:
     container_name: processwire_db
     restart: unless-stopped
     environment:
-      MARIADB_ROOT_PASSWORD: rootpass
-      MARIADB_DATABASE: processwire
-      MARIADB_USER: processwire
-      MARIADB_PASSWORD: processwirepass
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
     volumes:
       - mariadb_data:/var/lib/mysql
     networks:
