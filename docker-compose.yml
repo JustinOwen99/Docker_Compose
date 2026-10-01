@@ -1,0 +1,62 @@
+services:
+
+  nginx:
+    image: nginx:alpine
+    container_name: processwire_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - processwire
+      - phpmyadmin
+    networks:
+      - cms_network
+
+  processwire:
+    image: poljpocket/processwire
+    container_name: processwire_cms
+    restart: unless-stopped
+    environment:
+      DB_HOST: mariadb
+      DB_NAME: processwire
+      DB_USER: processwire
+      DB_PASSWORD: processwirepass
+    depends_on:
+      - mariadb
+    networks:
+      - cms_network
+
+  mariadb:
+    image: mariadb:11
+    container_name: processwire_db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpass
+      MARIADB_DATABASE: processwire
+      MARIADB_USER: processwire
+      MARIADB_PASSWORD: processwirepass
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - cms_network
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: processwire_phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mariadb
+      PMA_PORT: 3306
+    depends_on:
+      - mariadb
+    networks:
+      - cms_network
+
+volumes:
+  mariadb_data:
+
+networks:
+  cms_network:
+    driver: bridge
